@@ -1,2 +1,2 @@
 # Threshold-Triggered-Battery-SoX-Estimation
-SoX estimation on NASA battery data with MySQL, pandas, scikit-learn and PyTorch
+Battery state estimation (SoC, SOH, SoE, RUL) for 18650 Li-ion cells from the NASA PCoE ageing dataset: MySQL data pipeline, pandas, scikit-learn and PyTorch, with threshold-triggered model correction.
