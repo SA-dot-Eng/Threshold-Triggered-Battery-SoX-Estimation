@@ -221,3 +221,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# project data (downloaded, never committed)
+data/raw/
+data/processed/
+
+# Editors
+.idea/
+.vscode/
