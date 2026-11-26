@@ -41,6 +41,27 @@ def load_cycles(cell_id : str) -> list[dict]:
     return mat[cell_id]["cycle"]
 
 
-cycles = load_cycles("B0005")
+def matlab_datevec_to_datetime(datevec: list[float]) -> datetime:
+    """convert a MATLAB date vector to a datetime.
+    parameters
+    ----------
+    datevec : list[float]
+    [year, month, day, hour, minute, seconds].
+
+    returns
+    -------
+    datetime
+    the same instant as a python datetime object.
+    """
+    year, month, day, hour, minute, seconds = datevec
+    whole_seconds = int(seconds)
+    microseconds = round((seconds - whole_seconds) * 1_000_000)
+    return datetime(int(year), int(month), int(day), int(hour), int(minute), whole_seconds, microseconds)
+
+
+
+
+
+
 
 
