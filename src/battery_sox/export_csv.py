@@ -69,17 +69,18 @@ def build_tables() -> dict[str, pd.DataFrame]:
 
     cell_rows = []
     cycle_rows = []
+    sample_rows = []
     cycle_id = 0
 
-    for cell_id in CELL_IDS:
+    for cell_id in CELL_IDS:                       # level 1 (4 spaces)
         cell_rows.append({
             "cell_id": cell_id,
             "rated_capacity_ah": RATED_CAPACITY_AH,
         })
         cycles = load_cycles(cell_id)
 
-        for cycle_number, cycle in enumerate(cycles, start=1):
-            cycle_id += 1
+        for cycle_number, cycle in enumerate(cycles, start=1):   # level 2 (8)
+            cycle_id += 1                          # level 3 (12)
             is_discharge = cycle["type"] == "discharge"
             capacity = cycle["data"]["Capacity"] if is_discharge else None
 
@@ -93,10 +94,28 @@ def build_tables() -> dict[str, pd.DataFrame]:
                 "capacity_ah": capacity,
             })
 
-    return {
+            if is_discharge:                       # level 3 (12), inside the cycle loop
+                data = cycle["data"]
+                for sample_number, (t, v, i, temp) in enumerate(
+                    zip(data["Time"], data["Voltage_measured"],
+                        data["Current_measured"], data["Temperature_measured"]),
+                    start=1,
+                ):
+                    sample_rows.append({           # level 5 (20)
+                        "cycle_id": cycle_id,
+                        "sample_number": sample_number,
+                        "time_s": float(t),
+                        "voltage_v": float(v),
+                        "current_a": float(i),
+                        "temperature_c": float(temp),
+                    })
+
+    return {                                       # level 1 (4), after both loops
         "cells": pd.DataFrame(cell_rows),
         "cycles": pd.DataFrame(cycle_rows),
+        "discharge_samples": pd.DataFrame(sample_rows),
     }
+
 
 
 
