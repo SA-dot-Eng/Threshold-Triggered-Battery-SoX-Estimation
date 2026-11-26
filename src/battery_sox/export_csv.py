@@ -54,12 +54,49 @@ def matlab_datevec_to_datetime(datevec: list[float]) -> datetime:
     the same instant as a python datetime object.
     """
     year, month, day, hour, minute, seconds = datevec
+    seconds = float(seconds)
     whole_seconds = int(seconds)
     microseconds = round((seconds - whole_seconds) * 1_000_000)
     return datetime(int(year), int(month), int(day), int(hour), int(minute), whole_seconds, microseconds)
 
 
+def build_tables() -> dict[str, pd.DataFrame]:
+    """Dcitionary mapping - each table to its dataframe.
 
+    returns
+    -------
+    dict[str, pd.DataFrame]"""
+
+    cell_rows = []
+    cycle_rows = []
+    cycle_id = 0
+
+    for cell_id in CELL_IDS:
+        cell_rows.append({
+            "cell_id": cell_id,
+            "rated_capacity_ah": RATED_CAPACITY_AH,
+        })
+        cycles = load_cycles(cell_id)
+
+        for cycle_number, cycle in enumerate(cycles, start=1):
+            cycle_id += 1
+            is_discharge = cycle["type"] == "discharge"
+            capacity = cycle["data"]["Capacity"] if is_discharge else None
+
+            cycle_rows.append({
+                "cycle_id": cycle_id,
+                "cell_id": cell_id,
+                "cycle_number": cycle_number,
+                "cycle_type": cycle["type"],
+                "ambient_temp_c": cycle["ambient_temperature"],
+                "start_time": matlab_datevec_to_datetime(cycle["time"]),
+                "capacity_ah": capacity,
+            })
+
+    return {
+        "cells": pd.DataFrame(cell_rows),
+        "cycles": pd.DataFrame(cycle_rows),
+    }
 
 
 
